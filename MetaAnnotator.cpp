@@ -247,10 +247,10 @@ void printReMtx(int Evaluate[10][10][10]){
 
 void calCtgScore(vector<map<pair<int,int>,vector<double> > >&taxid_score,char* argv[]){
         BWTs bwts(argv[3]);
-        vector<map<int,int> >totalhit(Ctgs.CtgNum);
+        //vector<map<int,int> >totalhit(Ctgs.CtgNum);
    #pragma omp parallel for schedule(dynamic)
         for(int i=0;i<Ctgs.CtgNum;i++){
-                 calTaxoForCtg(bwts,Ctgs.contigs[i]->str,taxid_score[i],totalhit[i]);
+                 calTaxoForCtg(bwts,Ctgs.contigs[i]->str,taxid_score[i],Ctgs.impbool[i]->strbool);
 		}
 
 	bwts.clear();
@@ -258,8 +258,9 @@ void calCtgScore(vector<map<pair<int,int>,vector<double> > >&taxid_score,char* a
         ofstream ctgout(argv[7]);
 	for (int i=0;i<Ctgs.CtgNum;++i){
             map<int,double> genomescore;
-            ctgout<<i<<" "<<Ctgs.contigs[i]->str.length()<<" ";
-	    for(map<pair<int,int>,vector<double> >::const_iterator itr = taxid_score[i].begin();itr!=taxid_score[i].end();++itr)
+            ctgout<<i<<" "<<Ctgs.contigs[i]->str.length()<<" "<<bvToString(Ctgs.impbool[i]->strbool)<<endl;
+	    	
+            for(map<pair<int,int>,vector<double> >::const_iterator itr = taxid_score[i].begin();itr!=taxid_score[i].end();++itr)
                if (itr->second[0] >= 5){
                   ctgout<<itr->first.first<<" "<<itr->second[0]<<" ";
                   //genomescore[itr->first.first>>16] += itr->second[0];
