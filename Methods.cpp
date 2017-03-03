@@ -26,7 +26,7 @@ bool cmpsecond2(const pair<int,double>& p1,const pair<int,double>& p2){
 
 
 }
-void calTaxoForCtg(const BWTs& bwts, const string& ctgstr, map<pair<int,int>,vector<double> >& ctg_sp_score, map<int,int>&genomehit  ){
+void calTaxoForCtg(const BWTs& bwts, const string& ctgstr, map<pair<int,int>,vector<double> >& ctg_sp_score,vector<bool>& bv  ){
   const int kN = (MAXLAMDAK-MINLAMDAK)/STEPLAMDAK + 1;
   vector<int>substrLength;
   for(int lamdaK = MINLAMDAK;lamdaK <= MAXLAMDAK;lamdaK += STEPLAMDAK)
@@ -35,8 +35,11 @@ void calTaxoForCtg(const BWTs& bwts, const string& ctgstr, map<pair<int,int>,vec
   int SHORTEST_PARA_KMER = substrLength[0];
   int LONGEST_PARA_KMER = substrLength[Nsubstr-1];
   int startidx = 0;
+  int fragidx = 0;
+ 
   while(startidx < ctgstr.length()){
     int nextlen = 1000;
+	bool imp = 0;
 	if(ctgstr.length() - startidx < nextlen)
 	    nextlen = ctgstr.length() - startidx;
 	string str = ctgstr.substr(startidx,nextlen);	
@@ -93,7 +96,7 @@ void calTaxoForCtg(const BWTs& bwts, const string& ctgstr, map<pair<int,int>,vec
 			set<pair<int,int> >cand_taxid;
 			for(set<pair<int,int> >::const_iterator itr2 = gross_cand_taxid[i].begin();itr2!=gross_cand_taxid[i].end();++itr2){
 				cand_taxid.insert(*itr2);
-				genomehit[itr2->first]++;
+				//genomehit[itr2->first]++;
 			}
 			if(cand_taxid.size()==0)continue;
 			double unit = 1.0;
@@ -114,8 +117,13 @@ void calTaxoForCtg(const BWTs& bwts, const string& ctgstr, map<pair<int,int>,vec
 		    ctg_sp_score[itr->first].resize(kN);
 	    if(itr->second[0] > ctg_sp_score[itr->first][0])
 		    ctg_sp_score[itr->first][0] = itr->second[0];
-	}
+	    if(!imp && itr->second[0]>=5){
+		    bv[fragidx] = 1;
+		    imp = 1;
+	    }		   
+	}	    
 	startidx += nextlen / 2;
+	fragidx++;
   }
 }
 
