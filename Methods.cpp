@@ -26,7 +26,7 @@ bool cmpsecond2(const pair<int,double>& p1,const pair<int,double>& p2){
 
 
 }
-void calTaxoForCtg(const BWTs& bwts, const string& ctgstr, map<pair<int,int>,vector<double> >& ctg_sp_score,vector<bool>& bv  ){
+void calCtg(const BWTs& bwts, const string& ctgstr, map<pair<int,int>,vector<double> >& ctg_sp_score,vector<bool>& bv  ){
   const int kN = (MAXLAMDAK-MINLAMDAK)/STEPLAMDAK + 1;
   vector<int>substrLength;
   for(int lamdaK = MINLAMDAK;lamdaK <= MAXLAMDAK;lamdaK += STEPLAMDAK)
@@ -122,7 +122,7 @@ void calTaxoForCtg(const BWTs& bwts, const string& ctgstr, map<pair<int,int>,vec
 		    imp = 1;
 	    }		   
 	}	    
-	startidx += nextlen / 2;
+	startidx += nextlen ;
 	fragidx++;
   }
 }
