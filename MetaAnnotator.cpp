@@ -250,7 +250,7 @@ void calCtgScore(vector<map<pair<int,int>,vector<double> > >&taxid_score,char* a
         //vector<map<int,int> >totalhit(Ctgs.CtgNum);
    #pragma omp parallel for schedule(dynamic)
         for(int i=0;i<Ctgs.CtgNum;i++){
-                 calTaxoForCtg(bwts,Ctgs.contigs[i]->str,taxid_score[i],Ctgs.impbool[i]->strbool);
+                 calCtg(bwts,Ctgs.contigs[i]->str,taxid_score[i],Ctgs.impbool[i]->strbool);
 		}
 
 	bwts.clear();
