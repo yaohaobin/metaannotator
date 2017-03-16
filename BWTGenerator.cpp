@@ -296,8 +296,10 @@ void BWTGenerator::calBWTfromCompleGenome(std::string FoldPath,string seqtaxpath
 		
 		
 		ifs.getline(Buf,BufMax);
-		string seqid;
-		sscanf(Buf,">%s",&seqid);
+		char seqstr[20];
+		sscanf(Buf,">%s",&seqstr);
+		
+		string seqid(seqstr);
 		if(seqtax.find(seqid) == seqtax.end())
 		{
 			cerr<<fileidx << " " << seqid <<endl;
@@ -318,7 +320,7 @@ void BWTGenerator::calBWTfromCompleGenome(std::string FoldPath,string seqtaxpath
 		}
 		
 		unsigned elenum = regions[seqid].size();
-		int geneidx = 0
+		int geneidx = 0;
 		for(unsigned i = 0;i<elenum;i+=2){
 			unsigned start = regions[seqid][i] - 1;
 			unsigned end = regions[seqid][i+1] - 1;
@@ -339,7 +341,7 @@ void BWTGenerator::calBWTfromCompleGenome(std::string FoldPath,string seqtaxpath
 		if(bwtstridx + charidx >= MAXN-1)
 		{
 			long long bwtlen=calBWT(inputstr);
-			outputSA_BWT_Taxid(outfile, bwtlen);
+			outputSA_BWT_Taxid(outfile, bwtlen,seq_to_ti);
 			///////
 			bwtstridx = 0;
 			BinarySearchTable.clear();
