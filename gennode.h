@@ -158,77 +158,7 @@ void Subphytree::genTree(vector<map<string,set<string> > >& taxtree,map<string,s
 
 
 
-/*
-int Subphytree::genTree(int num_nodes,vector<map<string,set<string> > >& taxtree,map<string,string>& gbkdir){
-    int nodeidx = 0;
-	
-	
-	map<string,int> name_id;
-	
-	isLeaf = bit_vector(num_nodes,0);
-	
-	
-    for(int i=taxtree.size()-1;i>=0;i--){
-        for(map<string,set<string> >::iterator itr = taxtree[i].begin();itr!=taxtree[i].end();itr++){
-            id_name[nodeidx] = itr->first;
-			name_id[itr->first] = nodeidx;
-			if( ){
-				if(itr->second.size() < 2){
-					commonstring.push_back( get_seq(gbkdir[itr->first]) );
-					
-				}
-				else{
-					vector<string> temp;
-					for(int j = 0;j<itr->second.size();j++)
-						temp.push_back(gbkdir(itr->second[i]));
-					commonstring.push_back(findcommon_seq( temp));
-				}
-				
-				
-				isLeaf[nodeidx] = 1;
-				commontree.push_back(empty);
-				
-				commonnode newnode;
-				newnode.id = nodeidx;
-				commontree.push_back(newnode);
-			}
-			else{
-				commonnode internal;
-				internal.id = nodeidx;
-				if(itr->second.size() < 2){
-																														
-					internal.children.push_back(name_id[itr->second[0] ]);
-					
-					childnode = commontree[name_id[itr->second[0] ] ];
-					childnode.parent = nodeidx;
-					commonstring.push_back( commonstring[ name_id[ itr->second[0] ] ]);
-				}
-				else{
-					
-															
-					vector<int> children;
-					for(int j = 0;j<itr->second.size();j++){
-						int childid = name_id[itr->second[i]];
-						children.push_back(childid);
-					    childnode = commontree[childid];
-						childnode.parent = nodeidx;
-						internal.children.push_back(childid);
-					}
-					commonstring.push_back(findcommon_node( children,commonstring));
-					
-				}
-				commontree.push_back(internal);
-				
-			}
-			nodeidx++;
-            
-        }
-    }
-    
-	return nodeidx; 
-}
 
-*/
 void Subphytree::sortchild(){
 	for(int i=0;i<commontree.size();i++)
 		sort(commontree[i]->children.begin(),commontree[i]->children.end(),compnode);
