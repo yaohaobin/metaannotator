@@ -1,9 +1,11 @@
 #include<vector>
 #include<map>
+#include<set>
 #include<algorithm>
+using namespace std;
 string findcommon_seq(vector<string> dirs){
 	
-	cout<<dir<<endl;
+	cout<<dirs.size()<<endl;
 	return ""+(char)dirs.size();
 }
 string findcommon_node(vector<int>& children,vector<string >&commonstring){
@@ -18,14 +20,12 @@ string get_seq(string dir){
 	return dir;
 }
 
-bool compnode(node* &n1,node* &n2){
-	return n1->leafnum > n2->leafnum;
-}
+
 
 
 class commonnode{
 public:
-   	node* parent;
+   	commonnode* parent;
 	
 	vector<commonnode*> children;
 	
@@ -37,7 +37,7 @@ public:
 	
 	string dir;
 	
-}
+};
 
 class pathnode{
 public:
@@ -50,6 +50,10 @@ public:
 	int id;
 	
 };
+bool compnode(commonnode* &n1,commonnode* &n2){
+        return n1->leafnum > n2->leafnum;
+}
+
 
 class pathtree{
 public:
@@ -61,7 +65,7 @@ public:
 
 class Subphytree{
 public:
-	vector<node*> commontree; 
+	vector<commonnode*> commontree; 
 	vector<string> commonstring;
 	pathtree heavy;
 	map<int,string> id_name;
@@ -88,7 +92,7 @@ public:
 	}
 	
 private:
-   void label(commonnode* node,int idx);
+   int label(commonnode* node,int idx);
    void constructHeavypath(commonnode* node,pathnode* newpath,int idx);
 };
 
@@ -100,8 +104,9 @@ void Subphytree::genTree(vector<map<string,set<string> > >& taxtree,map<string,s
 	
 	
 	
-	
-	map<string,commonnode*> tempmap;
+    
+        
+
 	
     for(int i=taxtree.size()-1;i>=0;i--){
         for(map<string,set<string> >::iterator itr = taxtree[i].begin();itr!=taxtree[i].end();itr++){
@@ -111,25 +116,26 @@ void Subphytree::genTree(vector<map<string,set<string> > >& taxtree,map<string,s
 			parentnode->isLeaf = false;
 			parentnode->leafnum = 0;
 			tempmap[itr->first] = parentnode;
-			
-			for(int j=0;j<itr->second.size();j++){
-				if(gbkdir.find(itr->second[j]) != gbkdir.end() ){
+		        parentnode->dir = itr->first;	
+			for(set<string>::iterator itr2=itr->second.begin();itr2!=itr->second.end();itr2++){
+				if(gbkdir.find(*itr2) != gbkdir.end() ){
+                                         cout<<gbkdir[*itr2]<<endl;
 					 commonnode* node = new commonnode;
 					 node->isLeaf = true;
 					 node->leafnum = 1;
-					 node->dir = gbkdir[itr->second[j]];
-					 tempmap[itr->second[j]] = node; 
+					 node->dir = gbkdir[*itr2];
+					 
 					 
 					 parentnode->children.push_back(node);
 					 node->parent = parentnode;
-					 parentnode->leafnum++；
+					 parentnode->leafnum++;
 					 
 					 
 					 
 				}
 				else{
-					 commonnode* node = tempmap[itr->second[j]];
-					 parent->children.push_back(node);
+					 commonnode* node = tempmap[*itr2];
+					 parentnode->children.push_back(node);
 					 parentnode->leafnum += node->leafnum;
 					 node->parent = parentnode;
 				}
@@ -140,8 +146,9 @@ void Subphytree::genTree(vector<map<string,set<string> > >& taxtree,map<string,s
         }
     }
     
-	root = tempmap[taxtree[0].begin()->first]; 
-	
+	root = tempmap[taxtree[0].begin()->first];
+        cout<<tempmap.size()<<endl; 
+        	
 	preorder();
 	
 	for(map<string,commonnode*>::iterator itr=tempmap.begin();itr!=tempmap.end();itr++){
@@ -151,7 +158,77 @@ void Subphytree::genTree(vector<map<string,set<string> > >& taxtree,map<string,s
 
 
 
+/*
+int Subphytree::genTree(int num_nodes,vector<map<string,set<string> > >& taxtree,map<string,string>& gbkdir){
+    int nodeidx = 0;
+	
+	
+	map<string,int> name_id;
+	
+	isLeaf = bit_vector(num_nodes,0);
+	
+	
+    for(int i=taxtree.size()-1;i>=0;i--){
+        for(map<string,set<string> >::iterator itr = taxtree[i].begin();itr!=taxtree[i].end();itr++){
+            id_name[nodeidx] = itr->first;
+			name_id[itr->first] = nodeidx;
+			if( ){
+				if(itr->second.size() < 2){
+					commonstring.push_back( get_seq(gbkdir[itr->first]) );
+					
+				}
+				else{
+					vector<string> temp;
+					for(int j = 0;j<itr->second.size();j++)
+						temp.push_back(gbkdir(itr->second[i]));
+					commonstring.push_back(findcommon_seq( temp));
+				}
+				
+				
+				isLeaf[nodeidx] = 1;
+				commontree.push_back(empty);
+				
+				commonnode newnode;
+				newnode.id = nodeidx;
+				commontree.push_back(newnode);
+			}
+			else{
+				commonnode internal;
+				internal.id = nodeidx;
+				if(itr->second.size() < 2){
+																														
+					internal.children.push_back(name_id[itr->second[0] ]);
+					
+					childnode = commontree[name_id[itr->second[0] ] ];
+					childnode.parent = nodeidx;
+					commonstring.push_back( commonstring[ name_id[ itr->second[0] ] ]);
+				}
+				else{
+					
+															
+					vector<int> children;
+					for(int j = 0;j<itr->second.size();j++){
+						int childid = name_id[itr->second[i]];
+						children.push_back(childid);
+					    childnode = commontree[childid];
+						childnode.parent = nodeidx;
+						internal.children.push_back(childid);
+					}
+					commonstring.push_back(findcommon_node( children,commonstring));
+					
+				}
+				commontree.push_back(internal);
+				
+			}
+			nodeidx++;
+            
+        }
+    }
+    
+	return nodeidx; 
+}
 
+*/
 void Subphytree::sortchild(){
 	for(int i=0;i<commontree.size();i++)
 		sort(commontree[i]->children.begin(),commontree[i]->children.end(),compnode);
@@ -159,21 +236,24 @@ void Subphytree::sortchild(){
 
 void Subphytree::preorder(){
 	
-	
+        sortchild();	
 	label(root,0);
 	
 }
 
 int Subphytree::label(commonnode* node,int idx){
-	
+	cout<<idx<<" "<<node->children.size()<<" "<<node->dir<<endl;
 	for(int i=0;i<node->children.size();i++){
 		commonnode* child = node->children[i];
-	    if(child.isLeaf){
-		    commontree.push_back(child);
+                
+	        if(child->isLeaf){
+                        cout<<i<<endl;
+		        commontree.push_back(child);
 			child->id = idx;
 			idx++;
 		}
 		else{
+                        cout<<i<<endl;
 			idx = label(child,idx);
 			
 			idx++;
@@ -191,15 +271,15 @@ void Subphytree::constructHeavypath(commonnode* node,pathnode* newpath,int idx){
 	
 	
 	
-	newpath->path.push_back(commonnode->id);
+	newpath->path.push_back(node->id);
 	if(node->isLeaf) return;
 	
-	bool heavied = false
+	bool heavied = false;
 	for(int i=0;i<node->children.size();i++){
 		
 		if(!heavied){
 			heavied = true;
-			constructHeavypath(node->children[i],newpath);
+			constructHeavypath(node->children[i],newpath,idx);
 		}
 		else{
 			idx++;
@@ -207,7 +287,7 @@ void Subphytree::constructHeavypath(commonnode* node,pathnode* newpath,int idx){
 			pathnode* anotherpath = new pathnode;
 			anotherpath->id = idx;
 			heavy.paths.push_back(anotherpath);
-			constructHeavypath(node->children[i],anotherpath);
+			constructHeavypath(node->children[i],anotherpath,idx);
 		}
 	}
 }
