@@ -166,9 +166,9 @@ void Subphytree::sortchild(){
 
 void Subphytree::preorder(){
 	
-        sortchild();	
+        
 	label(root,0);
-	
+	sortchild();
 }
 
 int Subphytree::label(commonnode* node,int idx){
