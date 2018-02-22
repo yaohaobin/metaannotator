@@ -166,24 +166,26 @@ void Subphytree::sortchild(){
 
 void Subphytree::preorder(){
 	
-        sortchild();	
+        	
 	label(root,0);
-	
+	sortchild();
+
+        heavyPath();
 }
 
 int Subphytree::label(commonnode* node,int idx){
-	cout<<idx<<" "<<node->children.size()<<" "<<node->dir<<endl;
+	//cout<<idx<<" "<<node->children.size()<<" "<<node->dir<<endl;
 	for(int i=0;i<node->children.size();i++){
 		commonnode* child = node->children[i];
                 
 	        if(child->isLeaf){
-                        cout<<i<<endl;
+                        //cout<<i<<endl;
 		        commontree.push_back(child);
 			child->id = idx;
 			idx++;
 		}
 		else{
-                        cout<<i<<endl;
+                        //cout<<i<<endl;
 			idx = label(child,idx);
 			
 			idx++;
@@ -202,8 +204,12 @@ void Subphytree::constructHeavypath(commonnode* node,pathnode* newpath,int idx){
 	
 	
 	newpath->path.push_back(node->id);
-	if(node->isLeaf) return;
-	
+	if(node->isLeaf){
+            for(unsigned i=0;i<newpath->path.size();i++)
+                cout<<newpath->path[i]<<" ";
+            cout<<endl;        
+            return;
+	}
 	bool heavied = false;
 	for(int i=0;i<node->children.size();i++){
 		
@@ -217,6 +223,7 @@ void Subphytree::constructHeavypath(commonnode* node,pathnode* newpath,int idx){
 			pathnode* anotherpath = new pathnode;
 			anotherpath->id = idx;
 			heavy.paths.push_back(anotherpath);
+                        
 			constructHeavypath(node->children[i],anotherpath,idx);
 		}
 	}
