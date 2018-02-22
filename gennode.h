@@ -106,7 +106,7 @@ void Subphytree::genTree(vector<map<string,set<string> > >& taxtree,map<string,s
 	
     
         
-
+    map<string,commonnode*>tempmap;
 	
     for(int i=taxtree.size()-1;i>=0;i--){
         for(map<string,set<string> >::iterator itr = taxtree[i].begin();itr!=taxtree[i].end();itr++){
