@@ -22,6 +22,17 @@ void split(string& str, char delim,vector<string>& result)
     if (previous != str.length())
         result.push_back(str.substr(previous, current - previous));
 }
+void uniqtax(vector<string>& tax ){
+    
+    for(unsigned i=1;i<tax.size();i++){
+        stringstream ss;
+        ss<<tax[i]<<i;
+        ss>>tax[i];
+    }
+    
+}
+
+
 void gencommon(string& commonstr,string lenfilename,string commonfilename){
     ifstream lenfile(lenfilename.c_str());
     string gi;
@@ -84,7 +95,9 @@ int loadtree(string dbfile,vector<map<string,set<string> > >& taxtree,map<string
         split(info[2],';',tax);
         if(tax.size() == 0)continue;
         if(tax[0] !="Bacteria") continue;
+        uniqtax(tax);
         tax.push_back(info[4]);
+        
         tax.push_back(info[1]);
       
          
