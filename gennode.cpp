@@ -27,7 +27,8 @@ void uniqtax(vector<string>& tax ){
     for(unsigned i=1;i<tax.size();i++){
         stringstream ss;
         ss<<tax[i]<<i;
-        ss>>tax[i];
+        tax[i]=ss.str();
+     
     }
     
 }
