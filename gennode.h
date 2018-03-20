@@ -268,7 +268,22 @@ void Subphytree::heavyPath(){
 }
 
 
-
+void Subphytree:common(){
+       vector<int>spnode;
+       for(unsigned int i=0;i<commontree.size();i++)
+	       for(unsigned int j=0;j<commontree[i]->children.size();j++)
+		       if(commontree[i]->children[j]->isLeaf){
+			       spnode.push_back(i);
+			       break;
+		       }
+       cout<<"sp num: "<<spnode.size()<<endl;
+       for(unsigned int i=0;i<spnode.size();i++){
+	       if(commontree[spnode[i]]->children.size() >= 2)
+		       cout<<commontree[spnode[i]]->id<<" "<<commontree[spnode[i]]->children.size()<<endl;
+       }
+       
+	
+}
 
 
 
