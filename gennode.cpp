@@ -2,12 +2,238 @@
 #include<fstream>
 #include<vector>
 #include<map>
+#include<stack>
+#include<algorithm>
 #include<sstream>
+#include<stdlib.h>
 #include"gennode.h"
+
 #include <sdsl/suffix_trees.hpp>
+#define N 2
+
 using namespace std;
 using namespace sdsl;
 
+int read_old(int_vector<8>& text,string filename){
+    
+    ifstream fin(filename.c_str());
+    string line;
+    getline(fin,line);
+    string seq="";
+    string segment;
+    int num = 0;
+    while(fin>>segment)
+        seq+=segment;
+    fin.close();
+    long start=text.size();
+    text.resize(text.size()+seq.length()+1);
+    for(size_t i=0;i<seq.length();i++){
+     
+      
+        
+        switch(seq[i]){
+            //case 'a': text[i] = 1;break;
+            case 'A': text[start+i]=1;break;
+            case 'C': text[start+i]=2;break;
+            case 'G': text[start+i]=3;break;
+            case 'T': text[start+i]=4;break;
+            default: text[start+i] = 5;num++;
+            
+        }
+      
+
+    }
+    text[text.size()-1] = 6;
+    
+    return num;
+
+}
+
+
+int read(vector<unsigned char>& seqtext,string filename){
+    
+    ifstream fin(filename.c_str());
+    string line;
+    getline(fin,line);
+    string seq=""; 
+    string segment; 
+    int num = 0;
+    while(fin>>segment)
+        seq+=segment;
+    fin.close();
+  
+    
+	unsigned char text=0,revcomp=0,temp=0;
+	int idx = 0;
+	
+	
+    for(size_t i=0;i<seq.length();i++){
+         
+         
+        
+        switch(seq[i]){
+            //case 'a': text[i] = 1;break;
+            case 'A': temp = 0;break;
+            case 'C': temp = 1;break;
+            case 'T': temp = 2;break;
+            case 'G': temp = 3;break;
+            default: temp = 4;num++;
+
+        }
+		
+		if(temp<4){
+			text= (text<<2) | temp;
+			revcomp = revcomp | temp<<(2*idx);
+			
+			idx++;
+			if(idx>2){
+				
+				seqtext.push_back( (text<revcomp?text:revcomp) + 1);
+				
+				text = 0;
+				revcomp = 0;
+				idx = 0;
+			}
+		}
+		
+      
+
+    }
+	
+	if(idx !=0)
+		seqtext.push_back( (text<revcomp?text:revcomp) + 1);
+	
+    seqtext.push_back(65);
+
+    return num;
+
+}
+
+
+int gentext(int_vector<8>& seqtext,string& seq){
+    int num = 0;
+    unsigned long insertpos = seqtext.size();
+    seqtext.resize(seqtext.size()+seq.size()+1);
+
+
+    uint8_t text=0,revcomp=0,temp=0;
+    int idx = 0;
+
+
+    for(size_t i=0;i<seq.length();i++){
+
+
+
+        switch(seq[i]){
+            //case 'a': text[i] = 1;break;
+            case 'A': temp = 0;break;
+            case 'C': temp = 1;break;
+            case 'T': temp = 2;break;
+            case 'G': temp = 3;break;
+            default: temp = 4;num++;
+
+        }
+
+                if(temp<4){
+                        text= (text<<2) | temp;
+                        revcomp = revcomp | temp<<(2*idx);
+
+                        idx++;
+                        if(idx>2){
+
+                                seqtext[insertpos] =text<revcomp?text:revcomp + 1;
+                                insertpos++;
+                                text = 0;
+                                revcomp = 0;
+                                idx = 0;
+                        }
+                }
+
+
+
+    }
+
+        if(idx !=0){
+                seqtext[insertpos] = text<revcomp?text:revcomp + 1;
+            insertpos++;
+        }
+    seqtext[insertpos] = 65;
+    if(seqtext.size()>(insertpos+1) )
+        seqtext.resize(insertpos+1);
+
+
+   return num;
+}
+void genquery(string& querytext,string& query){
+   
+    //unsigned long insertpos = seqtext.size();
+  
+
+
+    uint8_t text=0,revcomp=0,temp=0;
+    int idx = 0;
+
+
+    for(size_t i=0;i<query.length();i++){
+
+
+
+        switch(query[i]){
+            //case 'a': text[i] = 1;break;
+            case 'A': temp = 0;break;
+            case 'C': temp = 1;break;
+            case 'T': temp = 2;break;
+            case 'G': temp = 3;break;
+            default: temp = 4;
+
+        }
+
+                if(temp<4){
+                        text= (text<<2) | temp;
+                        revcomp = revcomp | temp<<(2*idx);
+
+                        idx++;
+                        if(idx>2){
+
+                                querytext+= text<revcomp?text:revcomp + 1;
+                                
+                                text = 0;
+                                revcomp = 0;
+                                idx = 0;
+                        }
+                }
+
+
+
+    }
+
+        if(idx !=0){
+                querytext+= text<revcomp?text:revcomp + 1;
+            
+        }
+   
+    
+
+
+
+}
+
+int read_once(int_vector<8>& seqtext,string filename){
+    
+    ifstream fin(filename.c_str());
+    string line;
+    getline(fin,line);
+    string seq=""; 
+    string segment; 
+    int num = 0;
+    while(fin>>segment)
+        seq+=segment;
+    fin.close();
+    return gentext(seqtext,seq);
+
+    
+
+}
 
 
 void split(string& str, char delim,vector<string>& result)
@@ -77,12 +303,18 @@ void gencommon(string& commonstr,string lenfilename,string commonfilename){
 
 }
 
-int loadtree(string dbfile,vector<map<string,set<string> > >& taxtree,map<string,string>& gbkdir){
+int loadtree(string dbfile,vector<map<string,set<string> > >& taxtree,map<string,string>& gbkdir,string prefix){
     string taxcode;
     taxtree.resize(6);
     ifstream db(dbfile.c_str());
     string line;
     int nodenum = 0;
+    int normalseq = 0;
+
+    long totalsize = 0;
+    
+    
+    int_vector<8>seq;
     while(!db.eof()){
         getline(db,line);
         if(line.length() == 0)break;
@@ -90,7 +322,11 @@ int loadtree(string dbfile,vector<map<string,set<string> > >& taxtree,map<string
         split(line,'\t',info);
         int complete = stoull(info[3]);
         if (complete <0)continue; 
-        gbkdir[info[1]] = info[5];      
+
+        string filename = prefix+'/'+info[5]+'/'+info[0]+".fa";
+        gbkdir[info[1]] = filename;
+        
+
         vector<string> tax;
         //cout<<info.size()<<endl;
         split(info[2],';',tax);
@@ -101,7 +337,15 @@ int loadtree(string dbfile,vector<map<string,set<string> > >& taxtree,map<string
         
         tax.push_back(info[1]);
       
-         
+            
+
+        //int unnormal = read_once(seq,filename);
+        //if (unnormal>0)cout<<filename<<" "<<unnormal<<endl;
+            
+        //cout<<seq.size()<<endl;
+        
+      
+
         int i=0; 
         if (tax.size()-1 > taxtree.size() ) taxtree.resize(tax.size()-1);
         for(vector<string>::iterator itr=tax.begin();(itr+1)!=tax.end();itr++){
@@ -119,6 +363,32 @@ int loadtree(string dbfile,vector<map<string,set<string> > >& taxtree,map<string
             i++;
         }
    }
+   
+   /*
+   int_vector<8>seqforsa;
+   seqforsa.resize(seq.size());
+   for(unsigned long i=0;i<seq.size();i++)
+       seqforsa[i] = seq[i];
+   */
+   cout<<(int)seq[2345]<<endl;
+  
+   /*   
+   csa_bitcompressed<> csa;
+   for(unsigned long i = 0;i<seq.size();i++)
+   {
+        if( (int)seq[i] == 0)cout<<i<<endl;
+        break;
+   }
+   construct_im(csa,seq);
+   cout<<size_in_mega_bytes(csa)<<endl;
+   //store_to_file(csa,"complete.csa");  
+   
+   string query;
+   cin>>query;
+   string querytext="";
+   genquery(querytext,query);
+   cout<<locate(csa,querytext ).size()<<endl;
+   */
 }
 
 
@@ -141,8 +411,8 @@ int main(int argc,char* argv[]){
     vector<map<string,set<string> > > taxtree;
     map<string,string>gbkdir;
     taxtree.resize(6);
-    loadtree(argv[1],taxtree,gbkdir);
-     
+    loadtree(argv[1],taxtree,gbkdir,argv[2]);
+    
     for(int i=0;i<taxtree.size();i++)
         cout<<taxtree[i].size()<<endl;
 
@@ -155,7 +425,9 @@ int main(int argc,char* argv[]){
 
     cout<<"node"<<endl;
     Subphytree indextree;
-    indextree.genTree(taxtree,gbkdir);     
+    indextree.genTree(taxtree,gbkdir);
+    string prefix(argv[2]);
+    indextree.common(prefix);         
     return 0;
 
 
