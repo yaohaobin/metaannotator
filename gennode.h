@@ -3,7 +3,7 @@
 #include<set>
 #include<stack>
 #include<algorithm>
-#include<extractcommon.h>
+#include"extractcommon.h"
 using namespace std;
 string findcommon_seq(vector<string> dirs){
 	
@@ -47,7 +47,7 @@ string get_seq(string dir){
 	
 	return dir; 
 
-
+}
 
 
 class commonnode{
@@ -109,8 +109,7 @@ public:
 	void preorder();
 	
 	void sortchild();
-	
-	
+	void common(string prefix);	
 	~Subphytree(){
 		for(int i=0;i<commontree.size();i++)
 			delete commontree[i];
@@ -232,9 +231,9 @@ void Subphytree::constructHeavypath(commonnode* node,pathnode* newpath,int idx){
 	
 	newpath->path.push_back(node->id);
 	if(node->isLeaf){
-            for(unsigned i=0;i<newpath->path.size();i++)
-                cout<<newpath->path[i]<<" ";
-            cout<<endl;        
+            //for(unsigned i=0;i<newpath->path.size();i++)
+                //cout<<newpath->path[i]<<" ";
+            //cout<<endl;        
             return;
 	}
 	bool heavied = false;
@@ -268,7 +267,7 @@ void Subphytree::heavyPath(){
 }
 
 
-void Subphytree:common(){
+void Subphytree::common(string prefix){
        vector<int>spnode;
        for(unsigned int i=0;i<commontree.size();i++)
 	       for(unsigned int j=0;j<commontree[i]->children.size();j++)
@@ -278,8 +277,13 @@ void Subphytree:common(){
 		       }
        cout<<"sp num: "<<spnode.size()<<endl;
        for(unsigned int i=0;i<spnode.size();i++){
-	       if(commontree[spnode[i]]->children.size() >= 2)
+	       if(commontree[spnode[i]]->children.size() >= 2){
 		       cout<<commontree[spnode[i]]->id<<" "<<commontree[spnode[i]]->children.size()<<endl;
+                       vector<string>dirs;
+                       for(unsigned int j=0;j<commontree[spnode[i]]->children.size();j++)
+                           dirs.push_back(commontree[spnode[i]]->children[j]->dir);
+                       extract(dirs,prefix);
+               }
        }
        
 	
