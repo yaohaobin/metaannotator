@@ -7,13 +7,22 @@
 #include<algorithm>
 #include<sstream>
 #include<stdlib.h>
-
+#include<string>
 
 #include <sdsl/suffix_trees.hpp>
-#define k 9
+#define k 15
 
 using namespace std;
 using namespace sdsl;
+
+template<class t_csa, class t_pat=typename t_csa::string_type>
+uint64_t search(t_csa& csa,  t_pat pat){
+   uint64_t lb=0, rb=csa.size()-1;
+   backward_search(csa, lb, rb, pat.begin(), pat.end(), lb, rb);
+   return rb+1-lb;
+
+}
+
 
 
 void genquery(string& querytext,string& query){
@@ -67,33 +76,37 @@ void genquery(string& querytext,string& query){
 
 }
 
-
-int queryseq(string& seq,csa_wt<>& csa){
+template<class t_csa>
+int queryseq(string& seq,t_csa& csa){
   int occur = 0;
   set<string>kmers;
   for(unsigned int i=0;i<seq.length()-k;i++){
     
     string querytext="";
-    genquery(querytext,seq.substr(i,k));
-    kmers.insert(string);
+    string kmer = seq.substr(i,k);
+    genquery(querytext,kmer);
+    kmers.insert(querytext);
  
   }
-  
-  for(set<string>::itearator itr = kmers.begin();itr!=kmers.end();itr++)
-    if(locate(csa,querytext).size() > 0)
-        occur++;
+  cout<<kmers.size()<<endl;
+  for(set<string>::iterator itr = kmers.begin();itr!=kmers.end();itr++){
+    uint64_t hits= search(csa,*itr);
+    if(hits>10) occur++;
+    
+  }
   return occur;
 }
 
 int main(int argc,char* argv[]){
-  if(argc < 2)continue;
+  if(argc < 2)return 0;
   csa_wt<>csa;
   load_from_file(csa,argv[1]);
   ifstream seqfile(argv[2]);
   string line;
-  for(unsigned int i=0;i<100;i++){
-    seqfile>>line;
-    seqfile>>line;
+  for(unsigned int i=0;i<1000;i++){
+    getline(seqfile,line);
+    getline(seqfile,line);
+    //cout<<line.length()<<endl;
     cout<<queryseq(line,csa)<<endl;
   }
   
