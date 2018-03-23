@@ -8,9 +8,10 @@
 #include<sstream>
 #include<stdlib.h>
 #include<string>
+#include<omp.h>
 
 #include <sdsl/suffix_trees.hpp>
-#define k 15
+#define k 12
 
 using namespace std;
 using namespace sdsl;
@@ -90,7 +91,7 @@ int queryseq(string& seq,t_csa& csa){
   }
   cout<<kmers.size()<<endl;
   for(set<string>::iterator itr = kmers.begin();itr!=kmers.end();itr++){
-    uint64_t hits= search(csa,*itr);
+    uint64_t hits= locate(csa,*itr).size();
     if(hits>10) occur++;
     
   }
@@ -99,17 +100,27 @@ int queryseq(string& seq,t_csa& csa){
 
 int main(int argc,char* argv[]){
   if(argc < 2)return 0;
-  csa_wt<>csa;
+  csa_bitcompressed<>csa;
   load_from_file(csa,argv[1]);
   ifstream seqfile(argv[2]);
   string line;
-  for(unsigned int i=0;i<1000;i++){
+  vector<string>seqs;
+  while(!seqfile.eof() ){
+    
     getline(seqfile,line);
+    if(line.length() == 0)break;
     getline(seqfile,line);
+    
+    seqs.push_back(line);
     //cout<<line.length()<<endl;
-    cout<<queryseq(line,csa)<<endl;
+    //cout<<queryseq(line,csa)<<endl;
   }
-  
+  cout<<"seq num: "<<seqs.size()<<endl;
+  #pragma omp parallel{
+      #pragma omp for
+      for(unsigned int i=0;i<seqs.size();i++)
+          cout<<queryseq(seqs[i],csa);
+  }        
   seqfile.close();
   
   return 0; 
