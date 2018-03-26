@@ -17,14 +17,29 @@ using namespace std;
 using namespace sdsl;
 
 template<class t_csa, class t_pat=typename t_csa::string_type>
-uint64_t search(t_csa& csa,  t_pat pat){
+uint64_t search(t_csa& csa,  t_pat& pat){
    uint64_t lb=0, rb=csa.size()-1;
-   backward_search(csa, lb, rb, pat.begin(), pat.end(), lb, rb);
-   return rb+1-lb;
+   if (backward_search(csa, lb, rb, pat.begin(), pat.end(), lb, rb) > 0){
+       
+   };
+   return 0;
 
 }
 
-
+template<class t_csa, class t_pat=typename t_csa::string_type>
+uint64_t backsearch(t_csa& csa, t_pat pat){
+   uint64_t lb=0, rb=csa.size()-1;
+   uint64_t last_lb = lb,last_rb = rb;
+   for (auto it=pat.end(); it != pat.begin() and lb <= rb;) {
+            --it;
+          if (backward_search(csa, lb, rb, (typename t_cst::char_type)*it, lb, rb) > 0) {
+                last_lb = lb;
+                last_rb = rb;
+          }
+   }
+   
+   
+}
 
 void genquery(string& querytext,string& query){
    
