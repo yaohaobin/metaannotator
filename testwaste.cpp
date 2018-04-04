@@ -17,10 +17,19 @@ using namespace std;
 using namespace sdsl;
 
 template<class t_csa, class t_pat=typename t_csa::string_type>
-uint64_t search(t_csa& csa,  t_pat pat){
+uint64_t search(t_csa& csa,  t_pat pat,t_pat ext){
    uint64_t lb=0, rb=csa.size()-1;
-      
-   backward_search(csa, lb, rb, pat.begin(), pat.end(), lb, rb);
+   uint64_t last_lb = lb,uint64_t last_rb = rb;   
+   if (backward_search(csa, lb, rb, pat.begin(), pat.end(), lb, rb)>0){
+        for (auto it=ext.end(); it != ext.begin() and lb <= rb;) {
+            --it;
+            if (backward_search(cst.csa, lb, rb, (typename t_cst::char_type)*it, last_lb, last_rb) > 0) {
+                lb = last_lb;
+                rb = last_rb;
+            }
+        }
+   }
+   
    return rb+1-lb;
 
 }
@@ -85,16 +94,16 @@ int queryseq(string& seq,t_csa& csa){
   for(unsigned int i=0;i<seq.length()-k-exk;i++){
     
     string querytext="",queryext="";
-    string kmer = seq.substr(i,k);
-    string extension = seq.substr(i+k,exk);
+    string ext = seq.substr(i,exk);
+    string kmer = seq.substr(i+exk,k);
     genquery(querytext,kmer);
-    genquery(queryext,extension);
+    genquery(queryext,ext);
     kmers[querytext] = extension;
  
   }
   //cout<<kmers.size()<<endl;
   for(map<string,string>::iterator itr = kmers.begin();itr!=kmers.end();itr++){
-    uint64_t hits= search(csa,itr->first);
+    uint64_t hits= search(csa,itr->first,itr->second);
     if(hits>5) occur++;
     
   }
